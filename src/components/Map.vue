@@ -1,9 +1,10 @@
 <template>
   <div class="map">
     <h3>Карта офиса</h3>
-
     <div v-if="!isLoading" class="map-root">
-      <MapSVG ref="svg" />
+      <MapSVG
+        ref="svg"
+        @click="test($event)"/>
       <TableSVG ref="table" v-show="false" />
     </div>
     <div v-else>Loading...</div>
@@ -60,11 +61,16 @@ export default {
             'fill',
             legend.find((item) => item.group_id === table.group_id)?.color ??
               'transparent')
-            .on('click', () => this.showInfo(table._id));
+            .on('click', () => this.selectTable(table._id));
       });
     },
-    showInfo(id) {
-    console.log(id)
+    selectTable(id) {
+      this.$emit('showInfo', id);
+    },
+    test(ev) {
+        if (!ev.target.classList.contains('wrapper-table')) {
+          this.$emit('hideInfo');
+        }
     },
   },
 };

@@ -1,8 +1,14 @@
 <template>
     <div id="app">
         <div class="office">
-            <Map />
-            <SideMenu />
+            <Map
+                @showInfo="showInfo"
+                @hideInfo="hideInfo"
+                v-click-outside="hideInfo"/>
+            <SideMenu
+                :person="selectedEmployee"
+                :isUserOpened="isUserOpened"
+                @update:isUserOpened="hideInfo"/>
         </div>
     </div>
 </template>
@@ -10,12 +16,33 @@
 <script>
 import Map from "./components/Map.vue";
 import SideMenu from "./components/SideMenu.vue";
+import people from '@/assets/data/people.json';
+import ClickOutside from 'vue-click-outside';
 
 export default {
   name: "App",
   components: {
     Map,
     SideMenu,
+  },
+  data() {
+      return {
+          selectedEmployee: null,
+          isUserOpened: false,
+      };
+  },
+  methods: {
+    showInfo(id) {
+      this.selectedEmployee = people.find((elem) => elem.tableId === id);
+      this.isUserOpened = true;
+    },
+    hideInfo() {
+        this.isUserOpened = false;
+        this.selectedEmployee = null;
+    },
+  },
+  directives: {
+    ClickOutside
   },
 };
 </script>
