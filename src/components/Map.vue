@@ -4,7 +4,7 @@
 
     <div v-if="!isLoading" class="map-root">
       <MapSVG ref="svg" />
-      <TableSVG ref="table" @click="showInfo()" v-show="false" />
+      <TableSVG ref="table" v-show="false" />
     </div>
     <div v-else>Loading...</div>
   </div>
@@ -41,7 +41,6 @@ export default {
     } else {
       console.log('error');
     }
-    this.$refs.table.addEventListener('click', console.log(this));
   },
   methods: {
     drawTables() {
@@ -60,12 +59,12 @@ export default {
           .attr(
             'fill',
             legend.find((item) => item.group_id === table.group_id)?.color ??
-              'transparent'
-          );
+              'transparent')
+            .on('click', () => this.showInfo(table._id));
       });
     },
-    showInfo() {
-    console.log('show')
+    showInfo(id) {
+    console.log(id)
     },
   },
 };
