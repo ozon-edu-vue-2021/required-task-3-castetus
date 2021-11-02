@@ -46,7 +46,7 @@
         "_id": 6,
         "x": 14,
         "y": 40,
-        "group_id": 1,
+        "group_id": 3,
         "rotate": 80
     },
     {
@@ -75,7 +75,7 @@
         "_id": 10,
         "x": 80,
         "y": 38,
-        "group_id": 3,
+        "group_id": 2,
         "rotate": 80
     },
     {

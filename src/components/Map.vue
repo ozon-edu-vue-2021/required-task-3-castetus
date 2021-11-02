@@ -1,55 +1,109 @@
 <template>
-    <div class="map">
-        <h3>Карта офиса</h3>
-
-        <div
-            v-if="!isLoading"
-            class="map-root"
-        >
-            <!-- map -->
-        </div>
-        <div v-else>Loading...</div>
+  <div class="map">
+    <h3>Карта офиса</h3>
+    <div v-if="!isLoading" class="map-root">
+      <MapSVG
+        ref="svg"
+        @click="test($event)"/>
+      <TableSVG ref="table" v-show="false" />
     </div>
+    <div v-else>Loading...</div>
+  </div>
 </template>
 
 <script>
+import MapSVG from '@/assets/images/map.svg';
+import TableSVG from '@/assets/images/workPlace.svg';
+import tables from '@/assets/data/tables.json';
+import legend from '@/assets/data/legend.json';
+import * as d3 from 'd3';
+
 export default {
-    data() {
-        return {
-            isLoading: false,
-        };
+  components: {
+    MapSVG,
+    TableSVG,
+  },
+  data() {
+    return {
+      isLoading: false,
+      svg: null,
+      g: null,
+      tables: [],
+      tableSVG: null,
+    };
+  },
+  mounted() {
+    this.svg = d3.select(this.$refs.svg);
+    this.g = this.svg.select('g');
+    this.tableSVG = d3.select(this.$refs.table);
+    this.tables = tables;
+    if (this.g) {
+      this.drawTables();
+    } else {
+      console.log('error');
+    }
+  },
+  methods: {
+    drawTables() {
+      const tablesGroup = this.g.append('g').classed('groupPlaces', true);
+      this.tables.map((table) => {
+        const svgTable = tablesGroup
+          .append('g')
+          .attr('transform', `translate(${table.x}, ${table.y}) scale (0.5)`)
+          .attr('id', table.id)
+          .classed('employer-place', true);
+        svgTable
+          .append('g')
+          .attr('transform', `rotate(${table.rotate || 0})`)
+          .attr('id', table.group_id)
+          .html(this.tableSVG.html())
+          .attr(
+            'fill',
+            legend.find((item) => item.group_id === table.group_id)?.color ??
+              'transparent')
+            .on('click', () => this.selectTable(table._id));
+      });
     },
+    selectTable(id) {
+      this.$emit('showInfo', id);
+    },
+    test(ev) {
+        if (!ev.target.classList.contains('wrapper-table')) {
+          this.$emit('hideInfo');
+        }
+    },
+  },
 };
 </script>
 
 <style scoped>
 .map {
-    height: 100%;
-    width: 100%;
-    padding: 24px;
-    overflow: hidden;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
+  height: 100%;
+  width: 100%;
+  padding: 24px;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 .map-root {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 h3 {
-    margin-top: 0px;
+  margin-top: 0px;
 }
 
 ::v-deep svg {
-    height: 100%;
-    width: 100%;
+  height: 100%;
+  width: 100%;
 }
 
 ::v-deep .table {
-    cursor: pointer;
+  cursor: pointer;
 }
 </style>
